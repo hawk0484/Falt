@@ -25,6 +25,7 @@ import java.util.Stack;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
@@ -58,6 +59,7 @@ public class MAIN{
 			Display.setTitle("Falt");
 			Display.create();
 			Display.setVSyncEnabled(true);
+			Mouse.create();
 			Keyboard.create();
 		}catch(LWJGLException e){
 			e.printStackTrace();
@@ -116,6 +118,11 @@ public class MAIN{
 						glTexSubImage2D(GL_TEXTURE_2D,0,x,y,1,1,GL_RGB,GL_UNSIGNED_BYTE,convertImageData(pixel));
 					}
 				}
+			}
+			for(Entity ent : Entities){
+				glPushMatrix();
+				ent.render();
+				glPopMatrix();
 			}
 			updateLastWorld(map);
 			glFlush();
