@@ -32,8 +32,8 @@ import org.lwjgl.opengl.DisplayMode;
 public class MAIN{
 	static Menu ActiveMenu = null;
 	static Stack<Entity> Entities = new Stack<Entity>();
-	static int CamWidth = 1280, CamHeight = 800, Scale=1;
-	static float CamX = 0, CamY = 0, CamXVel=0, CamYVel=0, CamXMax=500, CamYMax=500;
+	static int CamWidth = 1280, CamHeight = 800;
+	static float CamX = 0, CamY = 0, CamXVel=0, CamYVel=0, CamXMax=500, CamYMax=500,Scale=1;
 	public static String GameState = "Menu";
 	public static World world = null;
 	private static BufferedImage lastworld = null;
@@ -68,8 +68,8 @@ public class MAIN{
 		
 		glMatrixMode(GL_PROJECTION);
 	    glLoadIdentity();
-		glOrtho(0, CamWidth,CamHeight, 0, 1, -1);
-		glMatrixMode(GL_MODELVIEW);
+		glOrtho(0, CamWidth,CamHeight, 0, 0, 1);
+		glMatrixMode(GL_TEXTURE);
 		glDisable(GL_DEPTH_TEST);
 		glEnable(GL_TEXTURE_2D);
 		getDelta();
@@ -95,6 +95,8 @@ public class MAIN{
 			float OffsetX=-CamX+CamWidth/2;
 			float OffsetY=-CamY+CamHeight/2;
 			world.getTexture().bind();
+			glPushMatrix();
+			glScalef(Scale, Scale, Scale);
 			glBegin(GL_QUADS);
 			glTexCoord2f(0,0);
 			glVertex2f(OffsetX, OffsetY);
@@ -118,12 +120,15 @@ public class MAIN{
 					}
 				}
 			}
+			
 			for(Entity ent : Entities){
 				glPushMatrix();
 				ent.render();
 				glPopMatrix();
 			}
 			updateLastWorld(map);
+			
+			glPopMatrix();
 			glFlush();
 			
 		}
@@ -144,7 +149,6 @@ public class MAIN{
 		if(GameState.startsWith("IG")||GameState.startsWith("Menu")){
 			ActiveMenu.update();
 		}
-		CamXMax=CamYMax=800*Scale;
 		float Mult=1f;
 		if(GameState=="Play"){
 			while(Keyboard.next()){
@@ -165,14 +169,21 @@ public class MAIN{
 				
 			}
 			if(keys.contains(Controls.getControl("Camera North").keychar)){
-				CamYVel-=calc(Mult);
+				CamYVel-=calc(Mult*Scale);
 			}if(keys.contains(Controls.getControl("Camera South").keychar)){
-				CamYVel+=calc(Mult);
+				CamYVel+=calc(Mult*Scale);
 			}if(keys.contains(Controls.getControl("Camera East").keychar)){
-				CamXVel+=calc(Mult);
+				CamXVel+=calc(Mult*Scale);
 			}if(keys.contains(Controls.getControl("Camera West").keychar)){
-				CamXVel-=calc(Mult);
+				CamXVel-=calc(Mult*Scale);
 			}
+			int wheel = Mouse.getDWheel();
+			if(wheel>0){
+				Scale*=0.99;
+			}else if(wheel<0){
+				Scale*=1.01;
+			}
+			System.out.println(Scale);
 		}
 		
 		
