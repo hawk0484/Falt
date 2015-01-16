@@ -76,6 +76,8 @@ public class MAIN{
 		ByteBuffer dataarray = convertImageData(world.map);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 		while (!Display.isCloseRequested()) {
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
@@ -102,11 +104,11 @@ public class MAIN{
 			glBegin(GL_QUADS);
 			glTexCoord2f(0,0);
 			glVertex2f(0, 0);
-			glTexCoord2f(0.5f,0);
+			glTexCoord2f(perc22(world.width),0);
 			glVertex2f(world.width, 0);
-			glTexCoord2f(0.5f,0.5f);
+			glTexCoord2f(perc22(world.width),perc22(world.height));
 			glVertex2f(world.width, world.height);
-			glTexCoord2f(0,0.5f);
+			glTexCoord2f(0,perc22(world.height));
 			glVertex2f(0, world.height);
 			
 			glEnd();
@@ -137,6 +139,11 @@ public class MAIN{
 		if(GameState.startsWith("IG")||GameState.startsWith("Menu")){
 			ActiveMenu.render();
 		}
+	}
+	private static float perc22(int f){
+		int i=1;
+		while(f>i)i*=2;
+		return (f/((float)i));
 	}
 	private void updateLastWorld(BufferedImage map){
 		lastworld=map.getSubimage(0, 0, map.getWidth(), map.getHeight());
