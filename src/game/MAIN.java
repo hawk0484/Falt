@@ -140,7 +140,7 @@ public class MAIN{
 			ActiveMenu.render();
 		}
 	}
-	private static float perc22(int f){
+	public static float perc22(int f){
 		int i=1;
 		while(f>i)i*=2;
 		return (f/((float)i));

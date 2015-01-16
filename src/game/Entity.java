@@ -28,12 +28,12 @@ public class Entity{
 		glBegin(GL_QUADS);
 		glTexCoord2f(0, 0);
 		glVertex2f(0, 0);
-		glTexCoord2f(1, 0);
-		glVertex2f(0+texture.getImageWidth(), 0);
+		glTexCoord2f(MAIN.perc22(texture.getImageWidth()), 0);
+		glVertex2f(MAIN.perc22(texture.getImageWidth()), 0);
 		glTexCoord2f(1, 1);
-		glVertex2f(0+texture.getImageWidth(), 0+texture.getImageHeight());
+		glVertex2f(MAIN.perc22(texture.getImageWidth()), MAIN.perc22(texture.getImageHeight()));
 		glTexCoord2f(0, 1);
-		glVertex2f(0, 0+texture.getImageHeight());
+		glVertex2f(0, MAIN.perc22(texture.getImageHeight()));
 		glEnd();
 		glPopMatrix();
 	}
