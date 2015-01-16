@@ -96,7 +96,6 @@ public class MAIN{
 			float OffsetY=-CamY+CamHeight/2;
 			world.getTexture().bind();
 			glBegin(GL_QUADS);
-			world.getTexture().bind();
 			glTexCoord2f(0,0);
 			glVertex2f(OffsetX, OffsetY);
 			glTexCoord2f(1,0);
