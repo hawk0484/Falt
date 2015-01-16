@@ -21,17 +21,21 @@ public class Entity{
 		
 	}
 	public void render(){
+		glPushMatrix();
 		texture.bind();
+		glTranslatef(x, y, 0);
+		glRotatef(rotation, 0, 0, 0);
 		glBegin(GL_QUADS);
-		glTexCoord2f(0,0);
-		glVertex2f(x, y);
-		glTexCoord2f(1,0);
-		glVertex2f(x+texture.getImageWidth(), y);
-		glTexCoord2f(1,1);
-		glVertex2f(x+texture.getImageWidth(), y+texture.getImageHeight());
-		glTexCoord2f(0,1);
-		glVertex2f(x, y+texture.getImageHeight());
+		glTexCoord2f(0, 0);
+		glVertex2f(0, 0);
+		glTexCoord2f(1, 0);
+		glVertex2f(0+texture.getImageWidth(), 0);
+		glTexCoord2f(1, 1);
+		glVertex2f(0+texture.getImageWidth(), 0+texture.getImageHeight());
+		glTexCoord2f(0, 1);
+		glVertex2f(0, 0+texture.getImageHeight());
 		glEnd();
+		glPopMatrix();
 	}
 	public Entity clone(){
 		Entity newent = new Entity();
@@ -57,6 +61,7 @@ public class Entity{
 	}
 	public Texture texture;
 	public int x=0,y=0;
+	public float rotation=0;
 	public static final Entity[] Entities = new Entity[256];
 	public static final Entity dirt = new Entity(0,"BasicTest.png");
 }
