@@ -66,12 +66,10 @@ public class MAIN{
 			System.exit(0);
 		}
 		
-		glMatrixMode(GL_PROJECTION);
-	    glLoadIdentity();
-		glOrtho(0, CamWidth,CamHeight, 0, 0, 1);
-		glMatrixMode(GL_TEXTURE);
 		glDisable(GL_DEPTH_TEST);
 		glEnable(GL_TEXTURE_2D);
+	    
+		
 		getDelta();
 		lastFPS=getTime();
 		//glTranslatef(0,0,-5);
@@ -79,6 +77,12 @@ public class MAIN{
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		while (!Display.isCloseRequested()) {
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+			glOrtho(CamX, CamX+CamWidth,CamY+CamHeight, CamY, 1, 0);
+			glMatrixMode(GL_TEXTURE);
+			
+			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );	
 			glClearColor(0.2f,0.2f,0.2f,1.0f);
 			update();
 		    render();
@@ -92,20 +96,18 @@ public class MAIN{
 	public void render(){
 		Display.sync(60);
 		if(GameState=="Play"||GameState.startsWith("IG")){
-			float OffsetX=-CamX+CamWidth/2;
-			float OffsetY=-CamY+CamHeight/2;
 			world.getTexture().bind();
 			glPushMatrix();
-			glScalef(Scale, Scale, Scale);
+			
 			glBegin(GL_QUADS);
 			glTexCoord2f(0,0);
-			glVertex2f(OffsetX, OffsetY);
-			glTexCoord2f(1,0);
-			glVertex2f(OffsetX+CamWidth, OffsetY);
-			glTexCoord2f(1,1);
-			glVertex2f(OffsetX+CamWidth, OffsetY+CamHeight);
-			glTexCoord2f(0,1);
-			glVertex2f(OffsetX, OffsetY+CamHeight);
+			glVertex2f(0, 0);
+			glTexCoord2f(0.5f,0);
+			glVertex2f(world.width, 0);
+			glTexCoord2f(0.5f,0.5f);
+			glVertex2f(world.width, world.height);
+			glTexCoord2f(0,0.5f);
+			glVertex2f(0, world.height);
 			
 			glEnd();
 			if(dif>5) dif=0;
