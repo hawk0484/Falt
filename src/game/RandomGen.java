@@ -20,13 +20,14 @@ public class RandomGen {
 		return out;
 	}
 	public static BufferedImage convertToBufferedImage(float[][] in){
-		BufferedImage map = new BufferedImage(in.length,in[0].length,BufferedImage.TYPE_INT_ARGB);
+		BufferedImage map = new BufferedImage(in.length,in[0].length,BufferedImage.TYPE_4BYTE_ABGR);
 		
 		for(int y=0;y<in[0].length;y++){
 			for(int x=0;x<in.length;x++){
 				float h=in[x][y];
 				Material m = Material.wGSelect(h);
-				map.setRGB(x, y, new Color(h,h,h,m.matid+m.height>0.5?128:0).getRGB());
+				map.setRGB(x, y, 
+						new Color(h,h,h,(m.matid+(m.height>0.5d?128:0))/255).getRGB());
 				
 			}
 		}

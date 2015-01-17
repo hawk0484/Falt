@@ -33,7 +33,7 @@ public class MAIN{
 	static Menu ActiveMenu = null;
 	static Stack<Entity> Entities = new Stack<Entity>();
 	static int CamWidth = 1280, CamHeight = 800;
-	static float CamX = 0, CamY = 0, CamXVel=0, CamYVel=0, CamXMax=500, CamYMax=500,Scale=1;
+	static float CamX = 0, CamY = 0, CamXVel=0, CamYVel=0, CamXMax=500, CamYMax=500,Scale=1, ScaleVel=0;
 	public static String GameState = "Menu";
 	public static World world = null;
 	private static BufferedImage lastworld = null;
@@ -41,7 +41,7 @@ public class MAIN{
 	public MAIN(){
 		texlder=new TextureLoader();
 		GameState="Play";
-		world=World.loadWorld(new File("test world.png"));
+		world=World.genWorld();
 		updateLastWorld(world.map);
 		ActiveMenu=new MenuMain();
 		try {
@@ -73,7 +73,6 @@ public class MAIN{
 		getDelta();
 		lastFPS=getTime();
 		//glTranslatef(0,0,-5);
-		ByteBuffer dataarray = convertImageData(world.map);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
@@ -81,7 +80,7 @@ public class MAIN{
 		while (!Display.isCloseRequested()) {
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
-			glOrtho(CamX, CamX+CamWidth,CamY+CamHeight, CamY, 1, 0);
+			glOrtho(CamX+CamWidth/2-(CamWidth/2)*Scale, CamX+CamWidth/2+(CamWidth/2)*Scale,CamY+CamHeight/2+(CamHeight/2)*Scale, CamY+CamHeight/2-(CamHeight/2)*Scale, 1, 0);
 			glMatrixMode(GL_TEXTURE);
 			
 			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );	
@@ -98,9 +97,25 @@ public class MAIN{
 	public void render(){
 		Display.sync(60);
 		if(GameState=="Play"||GameState.startsWith("IG")){
-			world.getTexture().bind();
+			
 			glPushMatrix();
 			
+			
+			if(dif>5) dif=0;
+			dif++;
+			world.getTexture().bind();
+			BufferedImage map = world.map;
+			
+			for(int y=dif;y<world.height;y+=5){
+				for(int x=dif;x<world.width;x+=5){
+					if(map.getRGB(x, y)!=lastworld.getRGB(x, y)){
+						BufferedImage pixel = new BufferedImage(1,1,BufferedImage.TYPE_INT_RGB);
+						pixel.setRGB(0, 0, map.getRGB(x, y));
+						glTexSubImage2D(GL_TEXTURE_2D,0,x,y,1,1,GL_RGB,GL_UNSIGNED_BYTE,convertImageData(pixel));
+						lastworld.setRGB(x, y, map.getRGB(x, y));
+					}
+				}
+			}
 			glBegin(GL_QUADS);
 			glTexCoord2f(0,0);
 			glVertex2f(0, 0);
@@ -112,25 +127,11 @@ public class MAIN{
 			glVertex2f(0, world.height);
 			
 			glEnd();
-			if(dif>5) dif=0;
-			dif++;
-			BufferedImage map = world.map;
-			for(int y=dif;y<world.height;y+=5){
-				for(int x=dif;x<world.width;x+=5){
-					if(map.getRGB(x, y)!=lastworld.getRGB(x, y)){
-						BufferedImage pixel = new BufferedImage(1,1,BufferedImage.TYPE_INT_RGB);
-						pixel.setRGB(x, y, map.getRGB(x, y));
-						glTexSubImage2D(GL_TEXTURE_2D,0,x,y,1,1,GL_RGB,GL_UNSIGNED_BYTE,convertImageData(pixel));
-					}
-				}
-			}
-			
 			for(Entity ent : Entities){
 				glPushMatrix();
 				ent.render();
 				glPopMatrix();
 			}
-			updateLastWorld(map);
 			
 			glPopMatrix();
 			glFlush();
@@ -188,11 +189,10 @@ public class MAIN{
 			}
 			int wheel = Mouse.getDWheel();
 			if(wheel>0){
-				Scale*=0.99;
+				ScaleVel-=(Scale)/100;
 			}else if(wheel<0){
-				Scale*=1.01;
+				ScaleVel+=(Scale)/100;
 			}
-			System.out.println(Scale);
 		}
 		
 		
@@ -200,6 +200,8 @@ public class MAIN{
 		CamY+=CamYVel;
 		CamXVel*=0.9;
 		CamYVel*=0.9;
+		ScaleVel*=0.9;
+		Scale+=ScaleVel;
 	}
 	public float calc(float mult){
 		return (float) (mult);

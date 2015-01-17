@@ -21,11 +21,13 @@ public class Material {
 		float bestdist=1f;
 		int bestid=0;
 		for(int i=0;i<Materials.length;i++){
+			if(Materials[i]!=null){
 			Material mat = Materials[i];
-			float dist = (f-mat.height)>0 ? (f-mat.height) : (mat.height-f);
-			if(dist<bestdist){
-				bestdist=dist;
-				bestid=i;
+				float dist = (f-mat.height)>0 ? (f-mat.height) : (mat.height-f);
+				if(dist<bestdist){
+					bestdist=dist;
+					bestid=i;
+				}
 			}
 		}
 		return Materials[bestid];

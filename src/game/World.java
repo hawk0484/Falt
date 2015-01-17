@@ -1,5 +1,6 @@
 package game;
 
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -20,13 +21,16 @@ public class World {
 	}
 	public Texture getTexture(){
 		try {
-			return MAIN.texlder.getTexture("test world.png");
+			return MAIN.texlder.getTexture(map);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
 		
+	}
+	public static World genWorld(){
+		return new World(RandomGen.convertToBufferedImage(RandomGen.GenerateHeightMap(new Dimension(512,512), 10, 10)));
 	}
 	public static World loadWorld(File f){
 		try {

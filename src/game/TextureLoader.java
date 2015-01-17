@@ -100,6 +100,19 @@ public class TextureLoader {
         
         return tex;
     }
+    public Texture getTexture(BufferedImage bi) throws IOException {
+        Texture tex = (Texture) table.get(bi.toString());
+        
+        if (tex != null) {
+            return tex;
+        }
+        
+        tex = getTexture(bi, GL11.GL_TEXTURE_2D, GL11.GL_RGBA, GL11.GL_NEAREST, GL11.GL_NEAREST);
+        
+        table.put(bi.toString(), tex);
+        
+        return tex;
+    }
     
     /**
      * Load a texture into OpenGL from a image reference on
@@ -113,7 +126,7 @@ public class TextureLoader {
      * @return The loaded texture
      * @throws IOException Indicates a failure to access the resource
      */
-    public Texture getTexture(String resourceName, 
+    public Texture getTexture(BufferedImage bi, 
                               int target, 
                               int dstPixelFormat, 
                               int minFilter, 
@@ -130,7 +143,7 @@ public class TextureLoader {
 
         GL11.glBindTexture(target, textureID); 
  
-        BufferedImage bufferedImage = loadImage(resourceName); 
+        BufferedImage bufferedImage = bi; 
         texture.setWidth(bufferedImage.getWidth());
         texture.setHeight(bufferedImage.getHeight());
         
@@ -164,6 +177,58 @@ public class TextureLoader {
         
         return texture; 
     } 
+    public Texture getTexture(String resourceName, 
+		            int target, 
+		            int dstPixelFormat, 
+		            int minFilter, 
+		            int magFilter) throws IOException 
+		{ 
+		int srcPixelFormat = 0;
+		
+		// create the texture ID for this texture 
+		
+		int textureID = createTextureID(); 
+		Texture texture = new Texture(target,textureID); 
+		
+		// bind this texture 
+		
+		GL11.glBindTexture(target, textureID); 
+		
+		BufferedImage bufferedImage = loadImage(resourceName); 
+		texture.setWidth(bufferedImage.getWidth());
+		texture.setHeight(bufferedImage.getHeight());
+		
+		if (bufferedImage.getColorModel().hasAlpha()) {
+			srcPixelFormat = GL11.GL_RGBA;
+		} else {
+			srcPixelFormat = GL11.GL_RGB;
+		}
+		
+		// convert that image into a byte buffer of texture data 
+		
+		ByteBuffer textureBuffer = convertImageData(bufferedImage,texture); 
+		
+		if (target == GL11.GL_TEXTURE_2D) 
+		{ 
+			GL11.glTexParameteri(target, GL11.GL_TEXTURE_MIN_FILTER, minFilter); 
+			GL11.glTexParameteri(target, GL11.GL_TEXTURE_MAG_FILTER, magFilter); 
+		} 
+		
+		// produce a texture from the byte buffer
+		
+		GL11.glTexImage2D(target, 
+		    0, 
+		    dstPixelFormat, 
+		    get2Fold(bufferedImage.getWidth()), 
+		    get2Fold(bufferedImage.getHeight()), 
+		    0, 
+		    srcPixelFormat, 
+		    GL11.GL_UNSIGNED_BYTE, 
+		    textureBuffer ); 
+		
+		return texture; 
+} 
+    
     
     /**
      * Get the closest greater power of 2 to the fold number
@@ -268,5 +333,5 @@ public class TextureLoader {
       temp.order(ByteOrder.nativeOrder());
 
       return temp.asIntBuffer();
-    }    
+    }  
 }
