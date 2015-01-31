@@ -108,9 +108,20 @@ public class MAIN{
 			
 			for(int y=dif;y<world.height;y+=5){
 				for(int x=dif;x<world.width;x+=5){
-					if(map.getRGB(x, y)!=lastworld.getRGB(x, y)){
-						BufferedImage pixel = new BufferedImage(1,1,BufferedImage.TYPE_INT_RGB);
-						pixel.setRGB(0, 0, map.getRGB(x, y));
+					if(map.getRGB(x, y)!=lastworld.getRGB(x, y)|true){
+						BufferedImage pixel = new BufferedImage(1,1,BufferedImage.TYPE_INT_ARGB);
+						Color c = new Color(map.getRGB(x, y));
+						int r=c.getRed(),g=c.getGreen(),b=c.getBlue(),a=c.getAlpha();
+						if(a>=128){
+							a-=128;
+						}
+						System.out.println(a);
+						Color mc = Material.Materials[a].color;
+						r=mc.getRed();
+						g=mc.getGreen();
+						b=mc.getRed();
+						a=255;
+						pixel.setRGB(0, 0, new Color(r,g,b,a).getRGB());
 						glTexSubImage2D(GL_TEXTURE_2D,0,x,y,1,1,GL_RGB,GL_UNSIGNED_BYTE,convertImageData(pixel));
 						lastworld.setRGB(x, y, map.getRGB(x, y));
 					}
@@ -189,9 +200,9 @@ public class MAIN{
 			}
 			int wheel = Mouse.getDWheel();
 			if(wheel>0){
-				ScaleVel-=(Scale)/100;
+				ScaleVel-=(Scale)/200;
 			}else if(wheel<0){
-				ScaleVel+=(Scale)/100;
+				ScaleVel+=(Scale)/200;
 			}
 		}
 		

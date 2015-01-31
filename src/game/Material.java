@@ -24,6 +24,7 @@ public class Material {
 			if(Materials[i]!=null){
 			Material mat = Materials[i];
 				float dist = (f-mat.height)>0 ? (f-mat.height) : (mat.height-f);
+				
 				if(dist<bestdist){
 					bestdist=dist;
 					bestid=i;
