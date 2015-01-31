@@ -39,6 +39,8 @@ public class Material {
 	public Color color = null;
 	public static final Material[] Materials = new Material[256];
 	public static final Material grass = new Material(0,Color.GREEN.darker()).setHeight(0.5f);
-	public static final Material dirt = new Material(1,new Color(131, 101, 57)).setHeight(0.25f);
-	public static final Material water = new Material(2,new Color(235, 244, 250)).setSpeed(0.05).setHeight(0.01f);
+	public static final Material dirt = new Material(1,new Color(131, 101, 57)).setHeight(0.4f);
+	public static final Material water = new Material(2,Color.BLUE).setSpeed(0.05).setHeight(0.4f);
+	public static final Material deepwater = new Material(3,Color.BLUE.darker()).setSpeed(0.05).setHeight(0.01f);
+	public static final Material stone = new Material(4,Color.GRAY).setSpeed(1).setHeight(0.6f);
 }

@@ -4,6 +4,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
+import java.util.EmptyStackException;
 import java.util.Hashtable;
 import java.util.Stack;
 
@@ -36,13 +38,15 @@ public class MAIN{
 	static float CamX = 0, CamY = 0, CamXVel=0, CamYVel=0, CamXMax=500, CamYMax=500,Scale=1, ScaleVel=0;
 	public static String GameState = "Menu";
 	public static World world = null;
-	private static BufferedImage lastworld = null;
+	private static float[][] lastworld = null;
 	public static TextureLoader texlder;
+	public static Stack<Point> blockUpdates = new Stack<Point>();
 	public MAIN(){
 		texlder=new TextureLoader();
 		GameState="Play";
 		world=World.genWorld();
-		updateLastWorld(world.map);
+		setupLastWorld();
+		updateEntireMap();
 		ActiveMenu=new MenuMain();
 		try {
 			Controls.loadControls(new File("falt.cfg"));
@@ -93,6 +97,7 @@ public class MAIN{
 		Display.destroy();
 		Keyboard.destroy();
 	}
+	
 	private int dif=0;
 	public void render(){
 		Display.sync(60);
@@ -101,41 +106,28 @@ public class MAIN{
 			glPushMatrix();
 			
 			
-			if(dif>5) dif=0;
-			dif++;
+			
 			world.getTexture().bind();
 			BufferedImage map = world.map;
-			
-			for(int y=dif;y<world.height;y+=5){
-				for(int x=dif;x<world.width;x+=5){
-					if(map.getRGB(x, y)!=lastworld.getRGB(x, y)|true){
-						BufferedImage pixel = new BufferedImage(1,1,BufferedImage.TYPE_INT_ARGB);
-						Color c = new Color(map.getRGB(x, y));
-						int r=c.getRed(),g=c.getGreen(),b=c.getBlue(),a=c.getAlpha();
-						if(a>=128){
-							a-=128;
-						}
-						System.out.println(a);
-						Color mc = Material.Materials[a].color;
-						r=mc.getRed();
-						g=mc.getGreen();
-						b=mc.getRed();
-						a=255;
-						pixel.setRGB(0, 0, new Color(r,g,b,a).getRGB());
-						glTexSubImage2D(GL_TEXTURE_2D,0,x,y,1,1,GL_RGB,GL_UNSIGNED_BYTE,convertImageData(pixel));
-						lastworld.setRGB(x, y, map.getRGB(x, y));
-					}
+			Point p;
+			try{
+				while((p = blockUpdates.pop())!=null){
+					updateBlock(p.x, p.y, map);
 				}
+			}catch(EmptyStackException e){
+				
 			}
-			glBegin(GL_QUADS);
-			glTexCoord2f(0,0);
-			glVertex2f(0, 0);
-			glTexCoord2f(perc22(world.width),0);
-			glVertex2f(world.width, 0);
-			glTexCoord2f(perc22(world.width),perc22(world.height));
-			glVertex2f(world.width, world.height);
-			glTexCoord2f(0,perc22(world.height));
-			glVertex2f(0, world.height);
+			
+				glBegin(GL_QUADS);
+				glTexCoord2f(0,0);
+				glVertex2f(0, 0);
+				glTexCoord2f(perc22(world.width),0);
+				glVertex2f(world.width, 0);
+				glTexCoord2f(perc22(world.width),perc22(world.height));
+				glVertex2f(world.width, world.height);
+				glTexCoord2f(0,perc22(world.height));
+				glVertex2f(0, world.height);
+			
 			
 			glEnd();
 			for(Entity ent : Entities){
@@ -157,12 +149,45 @@ public class MAIN{
 		while(f>i)i*=2;
 		return (f/((float)i));
 	}
-	private void updateLastWorld(BufferedImage map){
-		lastworld=map.getSubimage(0, 0, map.getWidth(), map.getHeight());
-	}
 	public void selectMenu(Menu m){
 		ActiveMenu=m;
 		GameState=m.getState();
+	}
+	public void scheduleBlockUpdate(int x,int y){
+		blockUpdates.push(new Point(x,y));
+	}
+	public void updateEntireMap(){
+		for(int y=0;y<world.height;y++)
+			for(int x=0;x<world.width;x++){
+				scheduleBlockUpdate(x, y);
+			}
+	}
+	public void setupLastWorld(){
+		lastworld=new float[world.width][world.height];
+		for(int y=0;y<world.height;y++)
+			for(int x=0;x<world.width;x++){
+				lastworld[x][y]=-1;
+			}
+	}
+	public void updateBlock(int x,int y,BufferedImage map){
+		BufferedImage pixel = new BufferedImage(1,1,BufferedImage.TYPE_INT_ARGB);
+		Color c = new Color(map.getRGB(x, y),true);
+		int r=c.getRed(),g=c.getGreen(),b=c.getBlue(),a=c.getAlpha();
+		
+		if(a!=lastworld[x] [y]){
+			boolean raised=a>=128;
+			
+			
+			Color mc = Material.Materials[a-(128*(raised? 1:0))].color;
+			r=mc.getRed();
+			g=mc.getGreen();
+			b=mc.getBlue();
+			
+			int col=new Color(r,g,b,255).getRGB();
+			pixel.setRGB(0, 0, col);
+			glTexSubImage2D(GL_TEXTURE_2D,0,x,y,1,1,GL_RGB,GL_UNSIGNED_BYTE,convertImageData(pixel));
+			lastworld[x][y]=a;
+		}
 	}
 	Stack<Character> keys = new Stack<Character>();
 	Stack<Integer> keycodes = new Stack<Integer>();

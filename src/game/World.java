@@ -30,7 +30,7 @@ public class World {
 		
 	}
 	public static World genWorld(){
-		return new World(RandomGen.convertToBufferedImage(RandomGen.GenerateHeightMap(new Dimension(512,512), 10, 10)));
+		return new World(RandomGen.convertToBufferedImage(RandomGen.GenerateHeightMap(new Dimension(1024, 1024), 10, 3)));
 	}
 	public static World loadWorld(File f){
 		try {
