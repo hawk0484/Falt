@@ -59,6 +59,7 @@ public class MAIN{
 			}
 		}
 		try{
+			//display modes
 			Display.setDisplayMode(new DisplayMode(1280,800));
 			Display.setTitle("Falt");
 			Display.create();
@@ -84,6 +85,7 @@ public class MAIN{
 		while (!Display.isCloseRequested()) {
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
+			//Camera
 			glOrtho(CamX+CamWidth/2-(CamWidth/2)*Scale, CamX+CamWidth/2+(CamWidth/2)*Scale,CamY+CamHeight/2+(CamHeight/2)*Scale, CamY+CamHeight/2-(CamHeight/2)*Scale, 1, 0);
 			glMatrixMode(GL_TEXTURE);
 			
@@ -99,7 +101,10 @@ public class MAIN{
 	}
 	
 	private int dif=0;
-	public void render(){
+	/**
+	 * DO NOT CALL
+	 */
+	private void render(){
 		Display.sync(60);
 		if(GameState=="Play"||GameState.startsWith("IG")){
 			
@@ -110,14 +115,14 @@ public class MAIN{
 			world.getTexture().bind();
 			BufferedImage map = world.map;
 			Point p;
-			try{
+			try{ //loop block updates
 				while((p = blockUpdates.pop())!=null){
 					updateBlock(p.x, p.y, map);
 				}
 			}catch(EmptyStackException e){
 				
 			}
-			
+				//draw map on screen
 				glBegin(GL_QUADS);
 				glTexCoord2f(0,0);
 				glVertex2f(0, 0);
@@ -144,32 +149,61 @@ public class MAIN{
 			ActiveMenu.render();
 		}
 	}
-	public static float perc22(int f){
+	/**
+	 * Use this function to scale image correctly
+	 * @param f size
+	 */
+	public static float perc22(int f){ 
 		int i=1;
 		while(f>i)i*=2;
 		return (f/((float)i));
 	}
+	/**
+	 * Switch active menu
+	 * @param m
+	 */
 	public void selectMenu(Menu m){
 		ActiveMenu=m;
 		GameState=m.getState();
 	}
-	public void scheduleBlockUpdate(int x,int y){
+	/**
+	 * add location to update list
+	 * @param x of block
+	 * @param y of block
+	 */
+	public void scheduleBlockUpdate(int x,int y){ 
 		blockUpdates.push(new Point(x,y));
+		
 	}
-	public void updateEntireMap(){
+	/**
+	 * add every tile to update list
+	 * @warning VERY SLOW
+	 */
+	public void updateEntireMap(){ 
 		for(int y=0;y<world.height;y++)
 			for(int x=0;x<world.width;x++){
 				scheduleBlockUpdate(x, y);
 			}
 	}
+	/**
+	 * Initialises the lastworld variable
+	 * @note is useless beyond MAIN constructor
+	 */
 	public void setupLastWorld(){
 		lastworld=new float[world.width][world.height];
 		for(int y=0;y<world.height;y++)
 			for(int x=0;x<world.width;x++){
 				lastworld[x][y]=-1;
 			}
+		
 	}
-	public void updateBlock(int x,int y,BufferedImage map){
+	/**
+	 * @warning DO NOT USE, ONLY USE {@link MAIN.scheduleBlockUpdate}
+	 * @param x
+	 * @param y
+	 * @param map
+	 */
+	private void updateBlock(int x,int y,BufferedImage map){
 		BufferedImage pixel = new BufferedImage(1,1,BufferedImage.TYPE_INT_ARGB);
 		Color c = new Color(map.getRGB(x, y),true);
 		int r=c.getRed(),g=c.getGreen(),b=c.getBlue(),a=c.getAlpha();
@@ -193,6 +227,9 @@ public class MAIN{
 	}
 	Stack<Character> keys = new Stack<Character>();
 	Stack<Integer> keycodes = new Stack<Integer>();
+	/**
+	 * @warning DO NOT CALL
+	 */
 	public void update(){
 		if(GameState.startsWith("IG")||GameState.startsWith("Menu")){
 			ActiveMenu.update();
@@ -241,9 +278,17 @@ public class MAIN{
 		ScaleVel*=0.9;
 		Scale+=ScaleVel;
 	}
+	/**
+	 * @warning IGNORE
+	 * @param mult
+	 */
 	public float calc(float mult){
 		return (float) (mult);
 	}
+	/**
+	 * main method, ignore
+	 * @param args
+	 */
 	public static void main(String[] args){
 		new MAIN();
 	}
