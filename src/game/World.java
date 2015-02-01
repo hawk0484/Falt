@@ -17,20 +17,18 @@ public class World {
 		map=bi;
 		width=bi.getWidth();
 		height=bi.getHeight();
-		
 	}
 	public Texture getTexture(){
 		try {
 			return MAIN.texlder.getTexture(map);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
 		
 	}
 	public static World genWorld(){
-		return new World(RandomGen.convertToBufferedImage(RandomGen.GenerateHeightMap(new Dimension(1024, 1024), 10, 3)));
+		return new World(RandomGen.convertToBufferedImage(RandomGen.GenerateHeightMap(new Dimension(2048, 2048), 10, 20)));
 	}
 	public static World loadWorld(File f){
 		try {

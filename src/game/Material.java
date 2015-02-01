@@ -22,9 +22,8 @@ public class Material {
 		int bestid=0;
 		for(int i=0;i<Materials.length;i++){
 			if(Materials[i]!=null){
-			Material mat = Materials[i];
+				Material mat = Materials[i];
 				float dist = (f-mat.height)>0 ? (f-mat.height) : (mat.height-f);
-				
 				if(dist<bestdist){
 					bestdist=dist;
 					bestid=i;
@@ -35,12 +34,12 @@ public class Material {
 	}
 	public double speed = 1;
 	public int matid = 0;
-	public float height = 1;
+	public float height = 0;
 	public Color color = null;
 	public static final Material[] Materials = new Material[256];
 	public static final Material grass = new Material(0,Color.GREEN.darker()).setHeight(0.5f);
-	public static final Material dirt = new Material(1,new Color(131, 101, 57)).setHeight(0.4f);
-	public static final Material water = new Material(2,Color.BLUE).setSpeed(0.05).setHeight(0.4f);
+	public static final Material dirt = new Material(1,new Color(131, 101, 57)).setHeight(0.49f);
+	public static final Material water = new Material(2,Color.BLUE).setSpeed(0.05).setHeight(0.45f);
 	public static final Material deepwater = new Material(3,Color.BLUE.darker()).setSpeed(0.05).setHeight(0.01f);
-	public static final Material stone = new Material(4,Color.GRAY).setSpeed(1).setHeight(0.6f);
+	public static final Material stone = new Material(4,Color.GRAY).setSpeed(1).setHeight(0.58f);
 }

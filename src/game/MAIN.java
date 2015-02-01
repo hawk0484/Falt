@@ -88,7 +88,7 @@ public class MAIN{
 			glMatrixMode(GL_TEXTURE);
 			
 			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );	
-			glClearColor(0.2f,0.2f,0.2f,1.0f);
+			glClearColor(0f,0f,0f,1.0f);
 			update();
 		    render();
 		    updateFPS();
@@ -179,10 +179,12 @@ public class MAIN{
 			
 			
 			Color mc = Material.Materials[a-(128*(raised? 1:0))].color;
-			r=mc.getRed();
-			g=mc.getGreen();
-			b=mc.getBlue();
-			
+			r=(int) (((float)mc.getRed())*((float)c.getRed()/128f));
+			g=(int) (((float)mc.getGreen())*((float)c.getGreen()/128f));
+			b=(int) (((float)mc.getBlue())*((float)c.getBlue()/128f));
+			if(r<0) r=0;
+			if(g<0) g=0;
+			if(b<0) b=0;
 			int col=new Color(r,g,b,255).getRGB();
 			pixel.setRGB(0, 0, col);
 			glTexSubImage2D(GL_TEXTURE_2D,0,x,y,1,1,GL_RGB,GL_UNSIGNED_BYTE,convertImageData(pixel));
@@ -225,9 +227,9 @@ public class MAIN{
 			}
 			int wheel = Mouse.getDWheel();
 			if(wheel>0){
-				ScaleVel-=(Scale)/200;
+				ScaleVel-=(Scale)/120;
 			}else if(wheel<0){
-				ScaleVel+=(Scale)/200;
+				ScaleVel+=(Scale)/120;
 			}
 		}
 		

@@ -12,14 +12,26 @@ public class RandomGen {
 		float[][] out = new float[(int) dim.getWidth()][(int) dim.getHeight()];
 		for(int y=0;y<dim.height;y++){
 			for(int x=0;x<dim.height;x++){
-				out[x][y]=Rand.nextFloat();
+				out[x][y]=Rand.nextFloat()>0.5f? 1:0;
 			}
 		}
-		corrupt(out,1000);
+		
+		
 		for(int i=0;i<smooth;i++){
 			out=Smooth(out);
 		}
+		corrupt(out,2000);
+		for(int i=0;i<smooth/10;i++){
+			out=Smooth(out);
+		}
 		return out;
+	}
+	public static float[][] set(float[][] in,int x,int y,float val){
+		if(x<in.length&&x>0&&y<in[0].length&&y>0){
+			in[x][y]=val;
+		}
+		
+		return in;
 	}
 	public static float[][] corrupt(float[][] in,int num){
 		for(int i=0;i<num;i++){
@@ -43,7 +55,7 @@ public class RandomGen {
 	private static float[][] Smooth(float[][] in){
 		for(int y=0;y<in[0].length;y++){
 			for(int x=0;x<in.length;x++){
-				in[x][y]=(get(in,x+1,y)+get(in,x-1,y)+get(in,x,y+1)+get(in,x,y-1)+get(in,x+1,y-1)+get(in,x-1,y-1)+get(in,x-1,y+1)+get(in,x+1,y+1))/8;
+				in[x][y]=(get(in,x+1,y)+get(in,x-1,y)+get(in,x,y+1)+get(in,x,y-1))/4;
 			}
 		}
 		return in;
