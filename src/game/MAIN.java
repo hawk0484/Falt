@@ -36,18 +36,18 @@ public class MAIN{
 	static Stack<Entity> Entities = new Stack<Entity>();
 	static int CamWidth = 1280, CamHeight = 800;
 	static float CamX = 0, CamY = 0, CamXVel=0, CamYVel=0, CamXMax=500, CamYMax=500,Scale=1, ScaleVel=0;
-	public static String GameState = "Menu";
+	public static String GameState = "Play";
 	public static World world = null;
 	private static float[][] lastworld = null;
 	public static TextureLoader texlder;
 	public static Stack<Point> blockUpdates = new Stack<Point>();
 	public MAIN(){
 		texlder=new TextureLoader();
-		GameState="Play";
+		GameState="Menu";
 		world=World.genWorld();
 		setupLastWorld();
 		updateEntireMap();
-		ActiveMenu=new MenuMain();
+		
 		try {
 			Controls.loadControls(new File("falt.cfg"));
 		} catch (IOException e) {
@@ -82,9 +82,12 @@ public class MAIN{
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		selectMenu(Menu.mainMenu);
+		
 		while (!Display.isCloseRequested()) {
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
+			
 			//Camera
 			glOrtho(CamX+CamWidth/2-(CamWidth/2)*Scale, CamX+CamWidth/2+(CamWidth/2)*Scale,CamY+CamHeight/2+(CamHeight/2)*Scale, CamY+CamHeight/2-(CamHeight/2)*Scale, 1, 0);
 			glMatrixMode(GL_TEXTURE);
@@ -109,21 +112,19 @@ public class MAIN{
 		if(GameState=="Play"||GameState.startsWith("IG")){
 			
 			glPushMatrix();
-			
-			
-			
 			world.getTexture().bind();
 			BufferedImage map = world.map;
 			Point p;
 			try{ //loop block updates
 				while((p = blockUpdates.pop())!=null){
+					
 					updateBlock(p.x, p.y, map);
 				}
 			}catch(EmptyStackException e){
 				
 			}
-				//draw map on screen
-				glBegin(GL_QUADS);
+			//draw map on screen
+			glBegin(GL_QUADS);
 				glTexCoord2f(0,0);
 				glVertex2f(0, 0);
 				glTexCoord2f(perc22(world.width),0);
@@ -132,9 +133,8 @@ public class MAIN{
 				glVertex2f(world.width, world.height);
 				glTexCoord2f(0,perc22(world.height));
 				glVertex2f(0, world.height);
-			
-			
 			glEnd();
+			
 			for(Entity ent : Entities){
 				glPushMatrix();
 				ent.render();
@@ -146,7 +146,8 @@ public class MAIN{
 			
 		}
 		if(GameState.startsWith("IG")||GameState.startsWith("Menu")){
-			ActiveMenu.render();
+			ActiveMenu.renderComponents(CamWidth/2-ActiveMenu.boundingBox.width/2,CamHeight/2-ActiveMenu.boundingBox.height/2);
+			
 		}
 	}
 	/**
@@ -198,7 +199,7 @@ public class MAIN{
 		
 	}
 	/**
-	 * @warning DO NOT USE, ONLY USE {@link MAIN.scheduleBlockUpdate}
+	 * @warning DO NOT USE, ONLY USE MAIN.scheduleBlockUpdate()
 	 * @param x
 	 * @param y
 	 * @param map
@@ -208,7 +209,7 @@ public class MAIN{
 		Color c = new Color(map.getRGB(x, y),true);
 		int r=c.getRed(),g=c.getGreen(),b=c.getBlue(),a=c.getAlpha();
 		
-		if(a!=lastworld[x] [y]){
+		if(a!=lastworld[x][y]){
 			boolean raised=a>=128;
 			
 			
@@ -231,9 +232,7 @@ public class MAIN{
 	 * @warning DO NOT CALL
 	 */
 	public void update(){
-		if(GameState.startsWith("IG")||GameState.startsWith("Menu")){
-			ActiveMenu.update();
-		}
+		
 		float Mult=1f;
 		if(GameState=="Play"){
 			while(Keyboard.next()){
@@ -313,6 +312,33 @@ public class MAIN{
       
         return delta;
     }
+	/**
+	 * Use this function to render something to screen
+	 * @param Tex the texture to be bound and rendered
+	 * @param x location of the image to be rendered
+	 * @param y location of the image to be rendered
+	 */
+	public static void drawImage(Texture Tex,int x,int y){
+		Tex.bind();
+		glPushMatrix();
+			glTranslated(x, y, 0);
+			glBegin(GL_QUADS);
+			glTexCoord2f(0,0);
+			glVertex2f(0, 0);
+			glTexCoord2f(perc22(Tex.getImageWidth()),0);
+			glVertex2f(Tex.getImageWidth(), 0);
+			glTexCoord2f(perc22(Tex.getImageWidth()),perc22(Tex.getImageHeight()));
+			glVertex2f(Tex.getImageWidth(), Tex.getImageHeight());
+			glTexCoord2f(0,perc22(Tex.getImageHeight()));
+			glVertex2f(0, Tex.getImageHeight());
+			glEnd();
+		glPopMatrix();
+	}
+	/**
+	 * pretty useless
+	 * @param bufferedImage
+	 * @return
+	 */
 	private ByteBuffer convertImageData(BufferedImage bufferedImage) {
 	    ByteBuffer imageBuffer;
 	    WritableRaster raster;
@@ -335,8 +361,7 @@ public class MAIN{
 
 	    // build a byte buffer from the temporary image
 	    // that be used by OpenGL to produce a texture.
-	    byte[] data = ((DataBufferByte) texImage.getRaster().getDataBuffer())
-	            .getData();
+	    byte[] data = ((DataBufferByte) texImage.getRaster().getDataBuffer()).getData();
 
 	    imageBuffer = ByteBuffer.allocateDirect(data.length);
 	    imageBuffer.order(ByteOrder.nativeOrder());

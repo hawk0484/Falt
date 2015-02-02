@@ -8,14 +8,29 @@ public class Material {
 		matid = id;
 		color=c;
 	}
+	/**
+	 * set walking speed
+	 * @param d
+	 * @return
+	 */
 	public Material setSpeed(double d){
 		speed=d;
 		return this;
 	}
+	/**
+	 * set height of block to generate at (use negative value for nongen)
+	 * @param height
+	 * @return
+	 */
 	public Material setHeight(float height){
 		this.height = height;
 		return this;
 	}
+	/**
+	 * get closest material
+	 * @param f
+	 * @return
+	 */
 	public static Material wGSelect(float f){
 		if(f < 0.01) f=0.01f;
 		float bestdist=1f;
@@ -38,7 +53,7 @@ public class Material {
 	public Color color = null;
 	public static final Material[] Materials = new Material[256];
 	public static final Material grass = new Material(0,Color.GREEN.darker()).setHeight(0.5f);
-	public static final Material dirt = new Material(1,new Color(131, 101, 57)).setHeight(0.49f);
+	public static final Material dirt = new Material(1,new Color(131, 101, 57)).setHeight(0.495f);
 	public static final Material water = new Material(2,Color.BLUE).setSpeed(0.05).setHeight(0.45f);
 	public static final Material deepwater = new Material(3,Color.BLUE.darker()).setSpeed(0.05).setHeight(0.01f);
 	public static final Material stone = new Material(4,Color.GRAY).setSpeed(1).setHeight(0.58f);
