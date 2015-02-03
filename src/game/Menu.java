@@ -33,7 +33,7 @@ public class Menu extends MenuComponent{
 		return state;
 	}
 	protected ComponentStyle style = null;
-	public static final Menu mainMenu = (Menu) new Menu("Menu Main Menu",ComponentStyle.menuBoarderStyle,new Rectangle(0,0,500,600)).add(new MenuComponent[]{
-		//new MenuButton(new Rectangle(200,400,100,30),"Play",9,true,ComponentStyle.test)
+	public static final Menu mainMenu = (Menu) new Menu("Menu Main Menu",ComponentStyle.highTechStyle,new Rectangle(0,0,500,900)).add(new MenuComponent[]{
+		new MenuButton(new Rectangle(400,400,100,30),"Play",40,true,ComponentStyle.test)
 	});
 }

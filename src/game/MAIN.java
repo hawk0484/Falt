@@ -296,7 +296,6 @@ public class MAIN{
 	long lastFrame;
 	public void updateFPS() {
         if (getTime() - lastFPS > 1000) {
-            Display.setTitle("FPS: " + fps);
             fps = 0;
             lastFPS += 1000;
         }
@@ -320,17 +319,18 @@ public class MAIN{
 	 */
 	public static void drawImage(Texture Tex,int x,int y){
 		Tex.bind();
+		
 		glPushMatrix();
-			glTranslated(x, y, 0);
+			
 			glBegin(GL_QUADS);
 			glTexCoord2f(0,0);
-			glVertex2f(0, 0);
+			glVertex2f(x, y);
 			glTexCoord2f(perc22(Tex.getImageWidth()),0);
-			glVertex2f(Tex.getImageWidth(), 0);
+			glVertex2f(x+Tex.getImageWidth(), y);
 			glTexCoord2f(perc22(Tex.getImageWidth()),perc22(Tex.getImageHeight()));
-			glVertex2f(Tex.getImageWidth(), Tex.getImageHeight());
+			glVertex2f(x+Tex.getImageWidth(), y+Tex.getImageHeight());
 			glTexCoord2f(0,perc22(Tex.getImageHeight()));
-			glVertex2f(0, Tex.getImageHeight());
+			glVertex2f(x, y+Tex.getImageHeight());
 			glEnd();
 		glPopMatrix();
 	}

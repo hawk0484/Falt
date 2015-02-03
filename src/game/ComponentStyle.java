@@ -70,5 +70,6 @@ public class ComponentStyle {
 		return bi;
 	}
 	public static final ComponentStyle test = new ComponentStyle(new File("testStyle.png"),1,"Ariel");
-	public static final ComponentStyle menuBoarderStyle = new ComponentStyle(new File("menuBoarderStyle.png"),64,"Ariel");
+	public static final ComponentStyle menuBoarderStyle = new ComponentStyle(new File("menuBoarderStyle.png"),32,"Ariel");
+	public static final ComponentStyle highTechStyle = new ComponentStyle(new File("highTechStyle.png"),64,"Ariel");
 }

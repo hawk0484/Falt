@@ -7,6 +7,14 @@ import static org.lwjgl.opengl.GL11.*;
 public class MenuButton extends MenuComponent{
 	public static Stack<MenuButton> buttons = new Stack<MenuButton>();
 	Texture tex=null;
+	/**
+	 * Default constructor for buttons, call from menu class in constructor to use.
+	 * @param r
+	 * @param text
+	 * @param size
+	 * @param active
+	 * @param style
+	 */
 	public MenuButton(Rectangle r,String text,int size,boolean active,ComponentStyle style){
 		this.active=active;
 		this.style=style;
@@ -16,6 +24,10 @@ public class MenuButton extends MenuComponent{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+	}
+	public void render(int xx,int yy){
+		MAIN.drawImage(tex, xx, yy);
 	}
 	/**
 	 * sets internal variable to true
