@@ -43,7 +43,7 @@ public class MAIN{
 	public static Stack<Point> blockUpdates = new Stack<Point>();
 	public MAIN(){
 		texlder=new TextureLoader();
-		GameState="Menu";
+		GameState="Play";
 		world=World.genWorld();
 		setupLastWorld();
 		updateEntireMap();
@@ -60,7 +60,7 @@ public class MAIN{
 		}
 		try{
 			//display modes
-			Display.setDisplayMode(new DisplayMode(1280,800));
+			Display.setDisplayMode(new DisplayMode(CamWidth,CamHeight));
 			Display.setTitle("Falt");
 			Display.create();
 			Display.setVSyncEnabled(true);
@@ -82,7 +82,7 @@ public class MAIN{
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-		selectMenu(Menu.mainMenu);
+		//selectMenu(Menu.mainMenu);
 		
 		while (!Display.isCloseRequested()) {
 			glMatrixMode(GL_PROJECTION);
@@ -172,7 +172,7 @@ public class MAIN{
 	 * @param x of block
 	 * @param y of block
 	 */
-	public void scheduleBlockUpdate(int x,int y){ 
+	public static void scheduleBlockUpdate(int x,int y){ 
 		blockUpdates.push(new Point(x,y));
 		
 	}
@@ -217,9 +217,9 @@ public class MAIN{
 			r=(int) (((float)mc.getRed())*((float)c.getRed()/128f));
 			g=(int) (((float)mc.getGreen())*((float)c.getGreen()/128f));
 			b=(int) (((float)mc.getBlue())*((float)c.getBlue()/128f));
-			if(r<0) r=0;
-			if(g<0) g=0;
-			if(b<0) b=0;
+			if(r>255) r=255;
+			if(g>255) g=255;
+			if(b>255) b=255;
 			int col=new Color(r,g,b,255).getRGB();
 			pixel.setRGB(0, 0, col);
 			glTexSubImage2D(GL_TEXTURE_2D,0,x,y,1,1,GL_RGB,GL_UNSIGNED_BYTE,convertImageData(pixel));

@@ -11,6 +11,7 @@ import javax.imageio.ImageIO;
 
 public class World {
 	BufferedImage map = null;
+	RandomGen rg = null;
 	int width = 0;
 	int height = 0;
 	public World(BufferedImage bi){
@@ -28,7 +29,10 @@ public class World {
 		
 	}
 	public static World genWorld(){
-		return new World(RandomGen.convertToBufferedImage(RandomGen.GenerateHeightMap(new Dimension(2048, 2048), 10, 20)));
+		RandomGen g = new RandomGen();
+		World w = new World(g.GenMap(2048, 2048, 1337));
+		w.rg=g;
+		return w;
 	}
 	public static World loadWorld(File f){
 		try {

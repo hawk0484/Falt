@@ -17,8 +17,7 @@ public class Entity{
 		}
 		
 	}
-	private Entity(){
-		
+	private Entity() {
 	}
 	public void render(){
 		glPushMatrix();
@@ -60,8 +59,8 @@ public class Entity{
 		return newent;
 	}
 	public Texture texture;
-	public int x=0,y=0;
+	public float x=0,y=0;
 	public float rotation=0;
 	public static final Entity[] Entities = new Entity[256];
-	public static final Entity dirt = new Entity(0,"BasicTest.png");
+	public static final Entity basicTest = new Entity(0,"BasicTest.png");
 }

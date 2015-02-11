@@ -13,7 +13,7 @@ public class Material {
 	 * @param d
 	 * @return
 	 */
-	public Material setSpeed(double d){
+	protected Material setSpeed(double d){
 		speed=d;
 		return this;
 	}
@@ -22,9 +22,17 @@ public class Material {
 	 * @param height
 	 * @return
 	 */
-	public Material setHeight(float height){
+	protected Material setHeight(float height){
 		this.height = height;
 		return this;
+	}
+	protected Material setGen(Gen g){
+		generator=g;
+		hasGen=true;
+		return this;
+	}
+	public Gen getGen(){
+		return generator;
 	}
 	/**
 	 * get closest material
@@ -47,14 +55,16 @@ public class Material {
 		}
 		return Materials[bestid];
 	}
+	private Gen generator = null;
+	public boolean hasGen=false;
 	public double speed = 1;
 	public int matid = 0;
 	public float height = 0;
 	public Color color = null;
 	public static final Material[] Materials = new Material[256];
 	public static final Material grass = new Material(0,Color.GREEN.darker()).setHeight(0.5f);
-	public static final Material dirt = new Material(1,new Color(131, 101, 57)).setHeight(0.495f);
 	public static final Material water = new Material(2,Color.BLUE).setSpeed(0.05).setHeight(0.45f);
-	public static final Material deepwater = new Material(3,Color.BLUE.darker()).setSpeed(0.05).setHeight(0.01f);
-	public static final Material stone = new Material(4,Color.GRAY).setSpeed(1).setHeight(0.58f);
+	public static final Material deepwater = new Material(3,Color.BLUE.darker()).setSpeed(0.01).setHeight(0.01f);
+	public static final Material stone = new Material(4,Color.GRAY).setSpeed(1).setHeight(0.54f);
+	public static final Material coaldeposit = new Material(5,Color.BLACK).setSpeed(0.9f).setGen(new GenOre(0.02f,30,3));
 }
