@@ -66,5 +66,5 @@ public class Material {
 	public static final Material water = new Material(2,Color.BLUE).setSpeed(0.05).setHeight(0.45f);
 	public static final Material deepwater = new Material(3,Color.BLUE.darker()).setSpeed(0.01).setHeight(0.01f);
 	public static final Material stone = new Material(4,Color.GRAY).setSpeed(1).setHeight(0.54f);
-	public static final Material coaldeposit = new Material(5,Color.BLACK).setSpeed(0.9f).setGen(new GenOre(0.02f,30,3));
+	public static final Material coaldeposit = new Material(5,Color.BLACK).setSpeed(0.9f).setGen(new GenOre(0.02f,10,3));
 }

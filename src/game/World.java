@@ -30,7 +30,7 @@ public class World {
 	}
 	public static World genWorld(){
 		RandomGen g = new RandomGen();
-		World w = new World(g.GenMap(2048, 2048, 1337));
+		World w = new World(g.GenMap(1024, 1024, 1337));
 		w.rg=g;
 		return w;
 	}

@@ -12,9 +12,14 @@ public class GenOre implements Gen{
 		if(f<chance){
 			for(int i=0;i<amount;i++){
 				double dir = Math.toRadians(r.nextFloat()*360);
-				int xx = (int) (x+Math.sin(dir)*diverse);
-				int yy = (int) (y+Math.cos(dir)*diverse);
-				
+				int xdir=(int) (Math.sin(dir)*diverse);
+				int ydir=(int) (Math.cos(dir)*diverse);
+				xdir=xdir==0?1:xdir;
+				ydir=ydir==0?1:ydir;
+				int xx = x+(r.nextInt(xdir>0?xdir:-xdir)*(xdir>0?1:-1));
+				int yy = y+(r.nextInt(ydir>0?ydir:-ydir)*(ydir>0?1:-1));
+				System.out.println(xdir);
+				System.out.println(ydir);
 				try{
 					int id=new Color(map.getRGB(xx, yy),true).getAlpha();
 					boolean up = id>=128;
@@ -38,6 +43,6 @@ public class GenOre implements Gen{
 	public GenOre(float chance,int amount,int diversity){
 		this.chance=chance/1024;
 		this.amount=amount;
-		diverse=diversity;
+		diverse=diversity*2;
 	}
 }

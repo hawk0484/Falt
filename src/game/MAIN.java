@@ -40,7 +40,7 @@ public class MAIN{
 	public static World world = null;
 	private static float[][] lastworld = null;
 	public static TextureLoader texlder;
-	public static Stack<Point> blockUpdates = new Stack<Point>();
+	public static Stack<Point> MaterialUpdates = new Stack<Point>();
 	public MAIN(){
 		texlder=new TextureLoader();
 		GameState="Play";
@@ -115,10 +115,10 @@ public class MAIN{
 			world.getTexture().bind();
 			BufferedImage map = world.map;
 			Point p;
-			try{ //loop block updates
-				while((p = blockUpdates.pop())!=null){
+			try{ //loop Material updates
+				while((p = MaterialUpdates.pop())!=null){
 					
-					updateBlock(p.x, p.y, map);
+					updateMaterial(p.x, p.y, map);
 				}
 			}catch(EmptyStackException e){
 				
@@ -169,12 +169,27 @@ public class MAIN{
 	}
 	/**
 	 * add location to update list
-	 * @param x of block
-	 * @param y of block
+	 * @param x of Material
+	 * @param y of Material
 	 */
-	public static void scheduleBlockUpdate(int x,int y){ 
-		blockUpdates.push(new Point(x,y));
+	public static void scheduleMaterialUpdate(int x,int y){ 
+		MaterialUpdates.push(new Point(x,y));
 		
+	}
+	
+	/**
+	 * use to set Materials
+	 * @note will call schedule Material update so do not call after
+	 * @param x
+	 * @param y
+	 * @param id
+	 */
+	public static void setMaterial(int x,int y,int id){
+		Material mapMaterial = Material.Materials[id];
+		Color m = mapMaterial.color;
+		new Color(m.getRed(),m.getGreen(),m.getBlue(),id);
+		setAbsoluteMapColor(x,y,world.map,m);
+		scheduleMaterialUpdate(x, y);
 	}
 	/**
 	 * add every tile to update list
@@ -183,7 +198,7 @@ public class MAIN{
 	public void updateEntireMap(){ 
 		for(int y=0;y<world.height;y++)
 			for(int x=0;x<world.width;x++){
-				scheduleBlockUpdate(x, y);
+				scheduleMaterialUpdate(x, y);
 			}
 	}
 	/**
@@ -198,33 +213,42 @@ public class MAIN{
 			}
 		
 	}
+	private static void setAbsoluteMapColor(int x,int y,BufferedImage map,Color c){
+		int r=c.getRed(),g=c.getGreen(),b=c.getBlue(),a=c.getAlpha();
+		boolean raised=a>=128;
+		
+		
+		Color mc = Material.Materials[a-(128*(raised? 1:0))].color;
+		r=mc.getRed();
+		g=mc.getGreen();
+		b=mc.getBlue();
+		int col=new Color(r,g,b,a).getRGB();
+		map.setRGB(x, y, col);
+	}
 	/**
-	 * @warning DO NOT USE, ONLY USE MAIN.scheduleBlockUpdate()
+	 * @warning DO NOT USE, ONLY USE MAIN.scheduleMaterialUpdate()
 	 * @param x
 	 * @param y
 	 * @param map
 	 */
-	private void updateBlock(int x,int y,BufferedImage map){
+	private void updateMaterial(int x,int y,BufferedImage map){
 		BufferedImage pixel = new BufferedImage(1,1,BufferedImage.TYPE_INT_ARGB);
 		Color c = new Color(map.getRGB(x, y),true);
 		int r=c.getRed(),g=c.getGreen(),b=c.getBlue(),a=c.getAlpha();
+		boolean raised=a>=128;
 		
-		if(a!=lastworld[x][y]){
-			boolean raised=a>=128;
-			
-			
-			Color mc = Material.Materials[a-(128*(raised? 1:0))].color;
-			r=(int) (((float)mc.getRed())*((float)c.getRed()/128f));
-			g=(int) (((float)mc.getGreen())*((float)c.getGreen()/128f));
-			b=(int) (((float)mc.getBlue())*((float)c.getBlue()/128f));
-			if(r>255) r=255;
-			if(g>255) g=255;
-			if(b>255) b=255;
-			int col=new Color(r,g,b,255).getRGB();
-			pixel.setRGB(0, 0, col);
-			glTexSubImage2D(GL_TEXTURE_2D,0,x,y,1,1,GL_RGB,GL_UNSIGNED_BYTE,convertImageData(pixel));
-			lastworld[x][y]=a;
-		}
+		
+		Color mc = Material.Materials[a-(128*(raised? 1:0))].color;
+		r=(int) (((float)mc.getRed())*((float)c.getRed()/128f));
+		g=(int) (((float)mc.getGreen())*((float)c.getGreen()/128f));
+		b=(int) (((float)mc.getBlue())*((float)c.getBlue()/128f));
+		if(r>255) r=255;
+		if(g>255) g=255;
+		if(b>255) b=255;
+		int col=new Color(r,g,b,255).getRGB();
+		pixel.setRGB(0, 0, col);
+		glTexSubImage2D(GL_TEXTURE_2D,0,x,y,1,1,GL_RGB,GL_UNSIGNED_BYTE,convertImageData(pixel));
+		
 	}
 	Stack<Character> keys = new Stack<Character>();
 	Stack<Integer> keycodes = new Stack<Integer>();
